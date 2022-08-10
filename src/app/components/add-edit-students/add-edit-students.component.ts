@@ -12,7 +12,7 @@ import { StudentService } from 'src/app/services/student.service';
 export class AddEditStudentsComponent implements OnInit {
   title: string;
   form: FormGroup;
-  id: string | undefined;
+  id: number | undefined;
 
   constructor(
     private fb: FormBuilder,
@@ -41,13 +41,7 @@ export class AddEditStudentsComponent implements OnInit {
         ],
       ],
       email: ['', [Validators.required, Validators.email]],
-      phone: [
-        '',
-        [
-          Validators.required,
-          Validators.maxLength(13),
-        ],
-      ],
+      phone: ['', [Validators.required, Validators.maxLength(13)]],
       birthdate: ['', [Validators.required]],
       address: [
         '',
@@ -60,9 +54,12 @@ export class AddEditStudentsComponent implements OnInit {
       active: [''],
     });
     this.title = 'Add';
+    this.id = aRoute.snapshot.params['id'];
   }
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.getStudent();
+  }
 
   onSubmit(): void {
     const { identification, name, surname, email, phone, birthdate, address } =
@@ -93,6 +90,33 @@ export class AddEditStudentsComponent implements OnInit {
 
   get angForm(): any {
     return this.form.controls;
+  }
+
+  getStudent() {
+    if (this.id !== undefined) {
+      this._studentService.getStudent(this.id).subscribe((data) => {
+        const {
+          identification,
+          name,
+          surname,
+          email,
+          phone,
+          address,
+          birthdate,
+        } = data;
+        this.form.patchValue({
+          identification,
+          name,
+          surname,
+          email,
+          phone,
+          address,
+          birthdate,
+        });
+      });
+    } else {
+      console.log('no id');
+    }
   }
 
   saveStudent(
@@ -133,6 +157,23 @@ export class AddEditStudentsComponent implements OnInit {
     phone: string,
     birthdate: Date,
     address: string,
-    id: string
-  ) {}
+    id: number
+  ) {
+    const student: Student = {
+      identification: identification,
+      name: name,
+      surname: surname,
+      email: email,
+      phone: phone,
+      birthdate: birthdate,
+      address: address,
+    };
+
+    this._studentService.editStudent(id, student).subscribe(
+      (data) => {
+        /* redirect to list */
+        this.router.navigate(['/']);
+      }
+    );
+  }
 }
