@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { ToastrService } from 'ngx-toastr';
 import { Student } from 'src/app/models/student';
 import { StudentService } from 'src/app/services/student.service';
 
@@ -18,7 +19,8 @@ export class AddEditStudentsComponent implements OnInit {
     private fb: FormBuilder,
     private aRoute: ActivatedRoute,
     private _studentService: StudentService,
-    private router: Router
+    private router: Router,
+    private toastr: ToastrService
   ) {
     this.form = this.fb.group({
       identification: ['', [Validators.required, Validators.pattern('[0-9]*')]],
@@ -114,8 +116,6 @@ export class AddEditStudentsComponent implements OnInit {
           birthdate,
         });
       });
-    } else {
-      console.log('no id');
     }
   }
 
@@ -141,10 +141,14 @@ export class AddEditStudentsComponent implements OnInit {
     this._studentService.addStudent(student).subscribe(
       (data) => {
         /* redirect to list */
+        this.toastr.success('Student added successfully', 'Success', {
+          timeOut: 3000,
+        });
         this.router.navigate(['/']);
       },
       (error) => {
         console.log(error);
+        this.toastr.error('Error', 'Ooops...', { timeOut: 3000 });
       }
     );
   }
@@ -169,11 +173,13 @@ export class AddEditStudentsComponent implements OnInit {
       address: address,
     };
 
-    this._studentService.editStudent(id, student).subscribe(
-      (data) => {
-        /* redirect to list */
-        this.router.navigate(['/']);
-      }
-    );
+    this._studentService.editStudent(id, student).subscribe((data) => {
+      /* redirect to list */
+      this.toastr.success('Student updated successfully', 'Success', {timeOut: 3000});
+      this.router.navigate(['/']);
+    }, error=>{
+      console.log(error);
+      this.toastr.error('Error', 'Ooops...', { timeOut: 3000 });
+    });
   }
 }

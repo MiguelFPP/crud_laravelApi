@@ -1,4 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
+import { ToastrService } from 'ngx-toastr';
 import { StudentService } from 'src/app/services/student.service';
 
 @Component({
@@ -8,7 +9,7 @@ import { StudentService } from 'src/app/services/student.service';
 })
 export class ListStudentsComponent implements OnInit, OnDestroy {
   students: [];
-  constructor(private _studentService: StudentService) {
+  constructor(private _studentService: StudentService, private toastr:ToastrService) {
     this.students = [];
   }
 
@@ -32,20 +33,15 @@ export class ListStudentsComponent implements OnInit, OnDestroy {
     );
   }
 
-  editStudent(id: number): void {
-    this._studentService.getStudent(id).subscribe((data) => {
-      console.log(data);
-    });
-  }
-
   changeStatus(id: number): void {
     this._studentService.changeStatus(id).subscribe(
       (data) => {
-        console.log(data);
         this.getStudents();
+        this.toastr.success('Student status changed successfully', 'Success',{timeOut: 3000});
       },
       (error) => {
         console.log(error);
+        this.toastr.error('Error changing student status', 'Ooops...', {timeOut: 3000});
       }
     );
   }
@@ -54,9 +50,11 @@ export class ListStudentsComponent implements OnInit, OnDestroy {
     this._studentService.deleteStudent(id).subscribe(
       () => {
         this.getStudents();
+        this.toastr.success('Student deleted successfully', 'Success');
       },
       (error) => {
         console.log(error);
+        this.toastr.error('Error deleting student', 'Ooops...');
       }
     );
   }
