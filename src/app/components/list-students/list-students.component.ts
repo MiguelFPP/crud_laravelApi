@@ -1,5 +1,4 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { Student } from 'src/app/models/student';
 import { StudentService } from 'src/app/services/student.service';
 
 @Component({
@@ -8,7 +7,7 @@ import { StudentService } from 'src/app/services/student.service';
   styleUrls: ['./list-students.component.css'],
 })
 export class ListStudentsComponent implements OnInit, OnDestroy {
-  students: Student[];
+  students: [];
   constructor(private _studentService: StudentService) {
     this.students = [];
   }
@@ -26,7 +25,6 @@ export class ListStudentsComponent implements OnInit, OnDestroy {
       (res) => {
         const { data } = res;
         this.students = data;
-        console.log(this.students);
       },
       (error) => {
         console.log(error);
@@ -39,6 +37,19 @@ export class ListStudentsComponent implements OnInit, OnDestroy {
       console.log(data);
     });
   }
+
+  changeStatus(id: number): void {
+    this._studentService.changeStatus(id).subscribe(
+      (data) => {
+        console.log(data);
+        this.getStudents();
+      },
+      (error) => {
+        console.log(error);
+      }
+    );
+  }
+
   deleteStudent(id: number): void {
     this._studentService.deleteStudent(id).subscribe(
       () => {

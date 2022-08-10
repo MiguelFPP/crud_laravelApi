@@ -1,5 +1,4 @@
 export class Student {
-  id: number;
   identification: number;
   name: string;
   surname: string;
@@ -7,10 +6,10 @@ export class Student {
   phone: string;
   birthdate: Date;
   address: string;
-  active: boolean;
+  active?: boolean;
 
   constructor(
-    id: number,
+    id:number,
     identification: number,
     name: string,
     surname: string,
@@ -20,7 +19,6 @@ export class Student {
     address: string,
     active: boolean = true
   ) {
-    this.id = id;
     this.identification = identification;
     this.name = name;
     this.surname = surname;
